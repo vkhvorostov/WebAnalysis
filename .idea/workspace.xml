@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="52dfa94f-77b6-4db9-a5dd-0ddffc93d629" name="Changes" comment="Merge remote-tracking branch 'origin/master'&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;.venv/HtmlParser.py&#10;#&#9;.venv/Main.py&#10;#&#9;.venv/ScreenshotMaker.py&#10;#&#9;.venv/SimpleSaver.py&#10;#&#9;.venv/Пик_screenshot.png" />
+    <list default="true" id="52dfa94f-77b6-4db9-a5dd-0ddffc93d629" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.venv/HtmlParser.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/HtmlParser.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.venv/Main.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/Main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.venv/ScreenshotMaker.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/ScreenshotMaker.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.venv/SimpleSaver.py" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/SimpleSaver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.venv/Пик_screenshot.png" beforeDir="false" afterPath="$PROJECT_DIR$/.venv/Пик_screenshot.png" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,18 +35,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.Gis.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Main2.executor&quot;: &quot;Run&quot;,
-    &quot;Python.MainCompare.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Артём/PycharmProjects/SitesParser/.venv&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.Gis.executor": "Run",
+    "Python.Main.executor": "Run",
+    "Python.Main2.executor": "Run",
+    "Python.MainCompare.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/Users/Артём/PycharmProjects/SitesParser/.venv",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Артём\PycharmProjects\SitesParser\.venv" />
