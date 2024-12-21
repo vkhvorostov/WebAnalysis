@@ -4,27 +4,30 @@ import DeepCodeAnalyser
 import JSAnalyser
 import ScreenshotMaker
 import SimpleSaver
-import SqlORM
+from SqlORM import PostgresDB
+
 
 def main():
-    #db = PostgresDB(db_name='your_database', user='your_username', password='your_password')
+    db = PostgresDB(db_name='webanalysis', user='exampleuser', password='examplepwd')
 
-    city = input("Введите город: ")
+    city = 'Новосибирск'  # input("Введите город: ")
+    industry = 'Медицинский центр'
     company_name = input("Введите название компании: ")
     url = input("Введите URL сайта компании: ")
 
     # Создаём иерархию папок для сохранения ресурсов и HTML
     save_dir = SimpleSaver.create_save_directory(city, company_name)
-
-    # Получаем HTML код страницы и связанные ресурсы
-    html = HtmlParser.get_html_and_resources(url, save_dir / "code")
-    if not html:
-        print(f"Не удалось получить HTML для {company_name}.")
-        return
-
-    # Делаем скриншот главной страницы
     screenshot_save_path = save_dir / f"{company_name}_screenshot.png"
-    ScreenshotMaker.take_screenshot(url, screenshot_save_path)
+
+    html = SimpleSaver.get_html(company_name, save_dir)
+    if not html:
+        # Получаем HTML код страницы и связанные ресурсы
+        html = HtmlParser.get_html_and_resources(url, save_dir / "code")
+        if not html:
+            print(f"Не удалось получить HTML для {company_name}.")
+            return
+        # Делаем скриншот главной страницы
+        ScreenshotMaker.take_screenshot(url, screenshot_save_path)
 
     # Анализируем страницу
     cms = DeepCodeAnalyser.detect_cms(html)
@@ -47,7 +50,8 @@ def main():
         social_links=social_links
     )
 
-    #db.set("companies", company_name, city, cms, language, framework)
+    db.set("companies", (company_name, city, industry, cms, language, framework, external_js, social_links))
+
 
 if __name__ == "__main__":
     main()

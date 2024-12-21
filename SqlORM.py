@@ -1,6 +1,7 @@
 import psycopg2
 from psycopg2 import sql
 
+
 class PostgresDB:
     def __init__(self, db_name, user, password, host='localhost', port='5432'):
         self.connection = psycopg2.connect(
@@ -14,7 +15,7 @@ class PostgresDB:
 
     def create(self, table_name, columns):
         """Создает таблицу с указанными столбцами."""
-        columns_with_types = ', '.join([f"{col} TEXT" for col in columns])  # Указан тип TEXT, вы можете изменить по необходимости
+        columns_with_types = ', '.join([f"{col} TEXT" for col in columns])
         create_table_query = sql.SQL("CREATE TABLE IF NOT EXISTS {} ({});").format(
             sql.Identifier(table_name),
             sql.SQL(columns_with_types)
@@ -39,8 +40,10 @@ class PostgresDB:
     def set(self, table_name, values):
         """Добавляет новую запись в указанную таблицу."""
         placeholders = ', '.join(['%s'] * len(values))
-        insert_query = sql.SQL("INSERT INTO {} VALUES ({});").format(
+        fields = ('company_name', 'city', 'industry', 'cms', 'language', 'framework', 'external_js', 'social_links')
+        insert_query = sql.SQL("INSERT INTO {} ({}) VALUES ({});").format(
             sql.Identifier(table_name),
+            sql.SQL(', '.join(fields)),
             sql.SQL(placeholders)
         )
         self.cursor.execute(insert_query, values)

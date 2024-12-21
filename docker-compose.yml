@@ -1,0 +1,23 @@
+services:
+
+  db:
+    image: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: webanalysis
+      POSTGRES_USER: exampleuser
+      POSTGRES_PASSWORD: examplepwd
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    ports:
+      - "5432:5432"
+    volumes:
+      - webanalysis-data:/var/lib/postgresql/data   
+
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    ports:
+    - 8080:8080
+
+volumes:
+  webanalysis-data:
