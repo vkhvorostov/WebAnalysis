@@ -63,10 +63,11 @@ def main():
         for row in csv_reader:
             city = row['city'].strip()
             industry = row['industry'].strip()
-            company_name = row['company_name'].strip()
+            company_name = row['company_name'].strip().replace('/', '-')
             already_saved = db.get_company(city, industry, company_name)
             if not already_saved:
                 process(db, city, industry, company_name, row['url'].strip())
+    db.close()
 
 
 if __name__ == "__main__":

@@ -58,7 +58,18 @@ class PostgresDB:
         self.cursor.execute(insert_query, values)
         self.connection.commit()
 
+    def set_field(self, table_name, id, name, value):
+        """Обновляет в указанной таблице указанное поле у нужной записи."""
+        query = sql.SQL("update {} set {} = %s where {} = %s").format(
+            sql.Identifier(table_name),
+            sql.Identifier(name),
+            sql.Identifier("id")
+        )
+        self.cursor.execute(query, (value, id))
+        self.connection.commit()
+
     def close(self):
         """Закрывает соединение с базой данных."""
         self.cursor.close()
         self.connection.close()
+
