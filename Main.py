@@ -10,7 +10,7 @@ from SqlORM import PostgresDB
 def process(db, city, industry, company_name, url):
 
     # Создаём иерархию папок для сохранения ресурсов и HTML
-    save_dir = SimpleSaver.create_save_directory(city, company_name)
+    save_dir = SimpleSaver.create_save_directory(industry, city, company_name)
     screenshot_save_path = save_dir / f"{company_name}_screenshot.png"
     headers = {}
 
@@ -24,8 +24,12 @@ def process(db, city, industry, company_name, url):
             print(f"Не удалось получить HTML для {company_name}.")
             SimpleSaver.remove_empty_directory(save_dir)
             return
-        # Делаем скриншот главной страницы
-        ScreenshotMaker.take_screenshot(url, screenshot_save_path)
+        # Делаем скриншот главной страницы и получаем html из этой же функции (так как может отличаться от результатов requests.get)
+        html = ScreenshotMaker.take_screenshot(url, screenshot_save_path)
+        if not html:
+            print(f"Не удалось сделать скриншот для {company_name}.")
+            SimpleSaver.remove_empty_directory(save_dir)
+            return
 
     # Анализируем страницу
     cms = DeepCodeAnalyser.detect_cms(html)
@@ -57,9 +61,12 @@ def main():
     with open(input_file, 'r', newline='') as in_file:
         csv_reader = csv.DictReader(in_file, delimiter=';')
         for row in csv_reader:
-            already_saved = db.get_company(row['city'], row['industry'], row['company_name'])
+            city = row['city'].strip()
+            industry = row['industry'].strip()
+            company_name = row['company_name'].strip()
+            already_saved = db.get_company(city, industry, company_name)
             if not already_saved:
-                process(db, row['city'], row['industry'], row['company_name'], row['url'])
+                process(db, city, industry, company_name, row['url'].strip())
 
 
 if __name__ == "__main__":

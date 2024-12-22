@@ -16,8 +16,8 @@ def get_html(company_name, save_dir):
 
 
 # Функция для создания иерархии папок
-def create_save_directory(city, company_name):
-    base_dir = Path("ParsedData") / city / company_name / datetime.now().strftime("%d.%m.%Y")  # %H_%M_
+def create_save_directory(industry, city, company_name):
+    base_dir = Path("ParsedData") / industry / city / company_name / datetime.now().strftime("%d.%m.%Y")  # %H_%M_
     os.makedirs(base_dir, exist_ok=True)
     return base_dir
 
