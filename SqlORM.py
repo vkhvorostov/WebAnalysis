@@ -37,6 +37,15 @@ class PostgresDB:
         self.cursor.execute(select_query)
         return self.cursor.fetchall()
 
+    def get_company(self, city, industry, company_name):
+        """Получает запись о компании из таблицы companies"""
+        table_name = 'companies'
+        select_query = sql.SQL("SELECT * FROM {} WHERE city = %s AND industry = %s AND company_name = %s").format(
+            sql.Identifier(table_name)
+        )
+        self.cursor.execute(select_query, (city, industry, company_name))
+        return self.cursor.fetchone()
+
     def set(self, table_name, values):
         """Добавляет новую запись в указанную таблицу."""
         placeholders = ', '.join(['%s'] * len(values))

@@ -4,6 +4,23 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 from pathlib import Path
 
+
+def get_html(url):
+    try:
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1.1 Safari/605.1.15'}
+        response = requests.get(url, headers=headers)
+        if response.status_code != 200:
+            print(f"Error fetching page: {response.status_code}")
+            return None, None
+
+        html = response.text
+        return (html, response.headers)
+
+    except Exception as e:
+        print(f"Failed to fetch page: {e}")
+        return None, None
+
+
 def get_html_and_resources(url, save_dir):
     try:
         response = requests.get(url)
@@ -14,11 +31,12 @@ def get_html_and_resources(url, save_dir):
         html = response.text
         soup = BeautifulSoup(html, 'html.parser')
         save_resources(soup, url, save_dir)
-        return html
+        return (html, response.headers)
 
     except Exception as e:
         print(f"Failed to fetch page: {e}")
         return None
+
 
 def save_resources(soup, base_url, save_dir):
     resources_dir = Path(save_dir)
@@ -31,6 +49,7 @@ def save_resources(soup, base_url, save_dir):
             resource_url = element.get(attr)
             if resource_url:
                 download_resource(resource_url, base_url, resources_dir / folder)
+
 
 def download_resource(resource_url, base_url, save_dir):
     try:

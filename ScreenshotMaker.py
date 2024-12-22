@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
+
 def take_screenshot(url, save_path):
     options = webdriver.ChromeOptions()
     options.add_argument('headless')  # Для работы без открытия окна браузера
