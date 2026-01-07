@@ -79,14 +79,14 @@ async def analyze_company(company: CompanyRequest):
         saved_company = db.get_company(company.city, company.industry, company.company_name.replace('/', '-'))
         if saved_company:
             return CompanyResponse(
-                company_name=saved_company[0],
-                city=saved_company[1],
-                industry=saved_company[2],
-                cms=saved_company[3],
-                language=saved_company[4],
-                framework=saved_company[5],
-                external_js=saved_company[6],
-                social_links=saved_company[7]
+                company_name=saved_company[1],  # Index 1 because ID is at index 0
+                city=saved_company[2],
+                industry=saved_company[3],
+                cms=saved_company[4],
+                language=saved_company[5],
+                framework=saved_company[6],
+                external_js=saved_company[7],
+                social_links=saved_company[8]
             )
         else:
             raise HTTPException(status_code=500, detail="Failed to save company data")
@@ -132,14 +132,14 @@ async def get_company(city: str, industry: str, company_name: str):
                 detail=f"Company {company_name} not found"
             )
         return CompanyResponse(
-            company_name=company[0],
-            city=company[1],
-            industry=company[2],
-            cms=company[3],
-            language=company[4],
-            framework=company[5],
-            external_js=company[6],
-            social_links=company[7]
+            company_name=company[1],  # Index 1 because ID is at index 0
+            city=company[2],
+            industry=company[3],
+            cms=company[4],
+            language=company[5],
+            framework=company[6],
+            external_js=company[7],
+            social_links=company[8]
         )
     except HTTPException:
         raise
