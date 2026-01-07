@@ -15,12 +15,12 @@ class Company(Base):
     company_name = Column(String, nullable=False)
     city = Column(String, nullable=False)
     industry = Column(String, nullable=False)
-    cms = Column(Text, nullable=True)
-    language = Column(Text, nullable=True)
-    framework = Column(Text, nullable=True)
+    cms = Column(String, nullable=True)
+    language = Column(String, nullable=True)
+    framework = Column(String, nullable=True)
     external_js = Column(Text, nullable=True)
     social_links = Column(Text, nullable=True)
-    url = Column(Text, nullable=True)
+    url = Column(String, nullable=False)
     
     def __repr__(self):
         return f"<Company(name='{self.company_name}', city='{self.city}', industry='{self.industry}')>"
