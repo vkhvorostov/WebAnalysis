@@ -1,5 +1,4 @@
-import os
-from sqlalchemy import create_engine, Column, String, Integer, Text
+from sqlalchemy import create_engine, Column, String, Integer, Text, Date, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from contextlib import contextmanager
@@ -10,21 +9,32 @@ Base = declarative_base()
 
 class Company(Base):
     __tablename__ = 'companies'
-    
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     company_name = Column(String, nullable=False)
     city = Column(String, nullable=False)
     industry = Column(String, nullable=False)
+    url = Column(String, nullable=False)
+
+    def __repr__(self):
+        return f"<Company(name='{self.company_name}', city='{self.city}', industry='{self.industry}')>"
+
+
+class CompanyData(Base):
+    __tablename__ = 'companies_data'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
+    date_parse = Column(Date, nullable=False)
     cms = Column(String, nullable=True)
     language = Column(String, nullable=True)
     framework = Column(String, nullable=True)
     external_js = Column(Text, nullable=True)
     social_links = Column(Text, nullable=True)
-    url = Column(String, nullable=False)
-    
-    def __repr__(self):
-        return f"<Company(name='{self.company_name}', city='{self.city}', industry='{self.industry}')>"
 
+    def __repr__(self):
+        return f"<CompanyData(name='{self.date_parse}')>"
+    
 
 class PostgresDB:
     def __init__(self, db_name='webanalysis', user='exampleuser', password='examplepwd', 
