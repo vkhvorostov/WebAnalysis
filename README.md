@@ -56,6 +56,7 @@ Migrations will run automatically on startup. The API will be available at http:
 - добавить сразу несколько компаний
 - проанализировать 1 компанию
 - проанализировать сразу несколько компаний (по списку id, по городу, по отрасли, все)
+- проанализировать по ранее собранным данным за определенную дату
 - получить список компаний с данными по последней дате (с фильтром GET /companies)
 - получить поля и список данных конкретной компании (упорядоченный по дате в порядке убывания)
 - удалить компанию
@@ -65,7 +66,7 @@ Migrations will run automatically on startup. The API will be available at http:
 ## TODO:
 - cms, language, framework, external_js, social_links вынести в отдельную таблицу companies_data, связанную с companies по ключу, добавить поле date_parse (Date)
 - добавить метод POST /companies, который добавит запись(и) в таблицу companies
-- изменить метод POST /analyze на POST /companies/analyze - метод должен запускать Main.process для компании с фильтром по списку id, по городу, по отрасли
+- изменить метод POST /analyze на POST /companies/analyze - метод должен запускать Main.process для компании с фильтром по списку id, по городу, по отрасли, в случае передачи даты - не собирать данные из интернета, а брать с диска
 - метод Main.process должен сохранять новую запись в таблице companies_data
 - изменить метод GET /companies, чтобы он возвращал данные по послдней дпте
 - добавить в метод GET /companies фильтр по городу, отрасли
