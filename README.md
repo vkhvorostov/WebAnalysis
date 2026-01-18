@@ -50,3 +50,28 @@ docker-compose up
 ```
 
 Migrations will run automatically on startup. The API will be available at http://localhost:8000 with interactive docs at http://localhost:8000/docs.
+
+## Use cases
+- добавить 1 компанию
+- добавить сразу несколько компаний
+- проанализировать 1 компанию
+- проанализировать сразу несколько компаний (по списку id, по городу, по отрасли, все)
+- получить список компаний с данными по последней дате (с фильтром GET /companies)
+- получить поля и список данных конкретной компании (упорядоченный по дате в порядке убывания)
+- удалить компанию
+- удалить данные компании (все или с фильтром по id)
+- изменить поля компании
+
+## TODO:
+- cms, language, framework, external_js, social_links вынести в отдельную таблицу companies_data, связанную с companies по ключу, добавить поле date_parse (Date)
+- добавить метод POST /companies, который добавит запись(и) в таблицу companies
+- изменить метод POST /analyze на POST /companies/analyze - метод должен запускать Main.process для компании с фильтром по списку id, по городу, по отрасли
+- метод Main.process должен сохранять новую запись в таблице companies_data
+- изменить метод GET /companies, чтобы он возвращал данные по послдней дпте
+- добавить в метод GET /companies фильтр по городу, отрасли
+- удалить метод /companies/{city}/{industry}/{company_name}
+- добавить метод GET /companies/{id} возвращающий поля и список данных конкретной компании (упорядоченный по дате в порядке убывания)
+- добавить метод DELETE /companies/{id}/data/{data_id}
+- добавить метод DELETE /companies/{id}/data
+- добавить метод DELETE /companies/{id}
+- добавить метод PATCH /companies/{id}
