@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Optional, List
 import Main
-from SqlORM import PostgresDB
+from SqlORM import PostgresDB, Company
 
 app = FastAPI(
     title="WebAnalysis API",
@@ -92,6 +92,44 @@ async def analyze_company(company: CompanyRequest):
             raise HTTPException(status_code=500, detail="Failed to save company data")
     
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/companies", response_model=CompanyResponse, status_code=201)
+async def create_company(company: CompanyRequest):
+    """
+    Insert a new company row (identity and URL only; analysis fields are unset until analyzed).
+    """
+    name = company.company_name.replace("/", "-")
+    try:
+        if db.get_company(company.city, company.industry, name):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Company {name} already exists in database",
+            )
+        row = Company(
+            company_name=name,
+            city=company.city,
+            industry=company.industry,
+            url=company.url,
+        )
+        db.session.add(row)
+        db.session.commit()
+        db.session.refresh(row)
+        return CompanyResponse(
+            company_name=row.company_name,
+            city=row.city,
+            industry=row.industry,
+            cms=None,
+            language=None,
+            framework=None,
+            external_js=None,
+            social_links=None,
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.session.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
 

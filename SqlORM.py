@@ -90,11 +90,11 @@ class PostgresDB:
                     c.company_name,
                     c.city,
                     c.industry,
-                    c.cms,
-                    c.language,
-                    c.framework,
-                    c.external_js,
-                    c.social_links
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
                 )
                 for c in companies
             ]
@@ -109,17 +109,18 @@ class PostgresDB:
         ).first()
         
         if company:
-            # Return tuple with ID first for backward compatibility
+            # Return tuple with ID first for backward compatibility.
+            # Parsed-tech fields live on companies_data, not on companies.
             return (
                 company.id,
                 company.company_name,
                 company.city,
                 company.industry,
-                company.cms,
-                company.language,
-                company.framework,
-                company.external_js,
-                company.social_links
+                None,
+                None,
+                None,
+                None,
+                None,
             )
         return None
     
@@ -134,11 +135,7 @@ class PostgresDB:
                 company_name=values[0],
                 city=values[1],
                 industry=values[2],
-                cms=values[3] if len(values) > 3 else None,
-                language=values[4] if len(values) > 4 else None,
-                framework=values[5] if len(values) > 5 else None,
-                external_js=values[6] if len(values) > 6 else None,
-                social_links=values[7] if len(values) > 7 else None
+                url=values[3],
             )
             self.session.add(company)
             self.session.commit()

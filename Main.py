@@ -52,7 +52,7 @@ def process(db, city, industry, company_name, url):
         social_links=social_links
     )
 
-    db.set("companies", (company_name, city, industry, cms, language, framework, external_js, social_links))
+    db.set("companies", (company_name, city, industry, url))
 
 
 def main():
