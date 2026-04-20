@@ -64,11 +64,11 @@ Migrations will run automatically on startup. The API will be available at http:
 - изменить поля компании
 
 ## TODO:
-- cms, language, framework, external_js, social_links вынести в отдельную таблицу companies_data, связанную с companies по ключу, добавить поле date_parse (Date)
-- добавить метод POST /companies, который добавит запись(и) в таблицу companies
+- [x] cms, language, framework, external_js, social_links вынести в отдельную таблицу companies_data, связанную с companies по ключу, добавить поле date_parse (Date)
+- [x] добавить метод POST /companies, который добавит запись(и) в таблицу companies
 - изменить метод POST /analyze на POST /companies/analyze - метод должен запускать Main.process для компании с фильтром по списку id, по городу, по отрасли, в случае передачи даты - не собирать данные из интернета, а брать с диска
 - метод Main.process должен сохранять новую запись в таблице companies_data
-- изменить метод GET /companies, чтобы он возвращал данные по послдней дпте
+- изменить метод GET /companies, чтобы он возвращал данные по последней дате
 - добавить в метод GET /companies фильтр по городу, отрасли
 - удалить метод /companies/{city}/{industry}/{company_name}
 - добавить метод GET /companies/{id} возвращающий поля и список данных конкретной компании (упорядоченный по дате в порядке убывания)
