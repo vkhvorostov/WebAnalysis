@@ -139,6 +139,8 @@ class PostgresDB:
             )
             self.session.add(company)
             self.session.commit()
+            self.session.refresh(company)
+            return company
     
     def set_field(self, table_name: str, id: int, name: str, value: str):
         """Обновляет в указанной таблице указанное поле у нужной записи."""

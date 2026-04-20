@@ -14,6 +14,14 @@ def get_html(company_name, save_dir):
     else:
         return False
 
+def get_json(company_name, save_dir):
+    json_file_path = save_dir / f"{company_name}.json"
+    if os.path.isfile(json_file_path):
+        with open(json_file_path) as f:
+            data = json.load(f)
+        return data
+    else:
+        return False
 
 def _folder_name_for_date(when: datetime) -> str:
     return when.strftime("%d.%m.%Y")
@@ -53,7 +61,7 @@ def remove_empty_directory(directory_path):
 
 
 # Функция для сохранения данных
-def save_parsing_results(save_dir, city, company_name, html, screenshot_data, cms, language, framework, external_js, social_links):
+def save_parsing_results(save_dir, company_name, html, cms, language, framework, external_js, social_links):
     # Сохранение HTML
     html_file_path = save_dir / f"{company_name}.html"
     with open(html_file_path, 'w', encoding='utf-8') as f:
