@@ -104,10 +104,7 @@ def companies_analyze(body: AnalyzeBatchRequest):
         for c in rows:
             ok, err = Main.process(
                 db,
-                c.city,
-                c.industry,
-                c.company_name,
-                c.url,
+                c,
                 parse_date=body.parse_date,
             )
             results.append(

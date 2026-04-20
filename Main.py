@@ -7,7 +7,15 @@ import DeepCodeAnalyser
 import JSAnalyser
 import ScreenshotMaker
 import SimpleSaver
-from SqlORM import PostgresDB, Company
+from SqlORM import Company, CompanyData, PostgresDB
+
+
+def _as_text(value) -> Optional[str]:
+    if value is None:
+        return None
+    if isinstance(value, str):
+        return value
+    return str(value)
 
 
 def process(
@@ -44,16 +52,18 @@ def process(
         social_links = data.get("social_links", [])
    
     else:
-        save_dir = SimpleSaver.create_save_directory(industry, city, company_name)
+        save_dir = SimpleSaver.create_save_directory(
+            company.industry, company.city, company_name
+        )
         screenshot_save_path = save_dir / f"{company_name}_screenshot.png"
         headers = {}
 
-        html, headers = HtmlParser.get_html(url)
+        html, headers = HtmlParser.get_html(company.url)
         if not html:
             print(f"Не удалось получить HTML для {company_name}.")
             SimpleSaver.remove_empty_directory(save_dir)
             return False, "Failed to fetch HTML"
-        html = ScreenshotMaker.take_screenshot(url, screenshot_save_path)
+        html = ScreenshotMaker.take_screenshot(company.url, screenshot_save_path)
         if not html:
             print(f"Не удалось сделать скриншот для {company_name}.")
             SimpleSaver.remove_empty_directory(save_dir)
@@ -76,6 +86,50 @@ def process(
             social_links=social_links,
         )
 
+    effective_date = parse_date or date.today()
+    if parse_date is not None:
+        # Re-parse from disk should overwrite same-date snapshot for the company.
+        existing = (
+            db.session.query(CompanyData)
+            .filter(
+                CompanyData.company_id == company.id,
+                CompanyData.date_parse == effective_date,
+            )
+            .first()
+        )
+        if existing:
+            existing.cms = _as_text(cms)
+            existing.language = _as_text(language)
+            existing.framework = _as_text(framework)
+            existing.external_js = _as_text(external_js)
+            existing.social_links = _as_text(social_links)
+        else:
+            db.session.add(
+                CompanyData(
+                    company_id=company.id,
+                    date_parse=effective_date,
+                    cms=_as_text(cms),
+                    language=_as_text(language),
+                    framework=_as_text(framework),
+                    external_js=_as_text(external_js),
+                    social_links=_as_text(social_links),
+                )
+            )
+    else:
+        # Live parse always appends a new historical row.
+        db.session.add(
+            CompanyData(
+                company_id=company.id,
+                date_parse=effective_date,
+                cms=_as_text(cms),
+                language=_as_text(language),
+                framework=_as_text(framework),
+                external_js=_as_text(external_js),
+                social_links=_as_text(social_links),
+            )
+        )
+    db.session.commit()
+
 
     return True, None
 
@@ -90,15 +144,14 @@ def main():
             industry = row["industry"].strip()
             company_name = row["company_name"].strip().replace("/", "-")
             already_saved = db.get_company(city, industry, company_name)
-            if not already_saved:
-                process(
-                    db,
-                    city,
-                    industry,
-                    company_name,
-                    row["url"].strip(),
-                    parse_date=None,
+            if already_saved:
+                company_obj = db.get_company_by_id(already_saved[0])
+            else:
+                company_obj = db.set(
+                    "companies", (company_name, city, industry, row["url"].strip())
                 )
+            if company_obj:
+                process(db, company_obj, parse_date=None)
     db.close()
 
 
