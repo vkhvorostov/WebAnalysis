@@ -90,11 +90,6 @@ class PostgresDB:
                     c.company_name,
                     c.city,
                     c.industry,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
                 )
                 for c in companies
             ]
