@@ -3,7 +3,7 @@ from datetime import date
 from typing import List, Optional
 
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 import Main
 from SqlORM import Company, PostgresDB
 
@@ -42,13 +42,18 @@ class CompanyResponse(BaseModel):
 
 
 class AnalyzeBatchRequest(BaseModel):
+    """`parse_date` is accepted in JSON as `date` (alias)."""
+
+    model_config = ConfigDict(populate_by_name=True)
+
     ids: Optional[List[int]] = Field(default=None, description="Restrict to these company IDs")
     cities: Optional[List[str]] = Field(default=None, description="Restrict to these cities")
     industries: Optional[List[str]] = Field(
         default=None, description="Restrict to these industries"
     )
-    date: Optional[date] = Field(
+    parse_date: Optional[date] = Field(
         default=None,
+        alias="date",
         description="If set, read HTML from ParsedData for this calendar date (dd.mm.yyyy folder); if null, fetch from the internet",
     )
 
@@ -103,7 +108,7 @@ def companies_analyze(body: AnalyzeBatchRequest):
                 c.industry,
                 c.company_name,
                 c.url,
-                parse_date=body.date,
+                parse_date=body.parse_date,
             )
             results.append(
                 AnalyzeResultItem(
