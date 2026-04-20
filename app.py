@@ -39,6 +39,7 @@ class CompanyResponse(BaseModel):
     framework: Optional[str] = None
     external_js: Optional[str] = None
     social_links: Optional[str] = None
+    domain_created: Optional[date] = None
 
 
 class AnalyzeBatchRequest(BaseModel):
@@ -152,6 +153,7 @@ async def create_company(company: CompanyRequest):
             framework=None,
             external_js=None,
             social_links=None,
+            domain_created=None,
         )
     except HTTPException:
         raise
@@ -185,6 +187,9 @@ async def get_companies():
                     framework=latest_data.framework if latest_data else None,
                     external_js=latest_data.external_js if latest_data else None,
                     social_links=latest_data.social_links if latest_data else None,
+                    domain_created=latest_data.domain_created
+                    if latest_data
+                    else None,
                 )
             )
         return response
@@ -198,21 +203,36 @@ async def get_company(city: str, industry: str, company_name: str):
     Get a specific company by city, industry, and company name
     """
     try:
-        company = db.get_company(city, industry, company_name)
+        company = (
+            db.session.query(Company)
+            .filter(
+                Company.city == city,
+                Company.industry == industry,
+                Company.company_name == company_name,
+            )
+            .first()
+        )
         if not company:
             raise HTTPException(
                 status_code=404,
                 detail=f"Company {company_name} not found"
             )
+        latest_data = (
+            db.session.query(CompanyData)
+            .filter(CompanyData.company_id == company.id)
+            .order_by(CompanyData.date_parse.desc(), CompanyData.id.desc())
+            .first()
+        )
         return CompanyResponse(
-            company_name=company[1],  # Index 1 because ID is at index 0
-            city=company[2],
-            industry=company[3],
-            cms=company[4],
-            language=company[5],
-            framework=company[6],
-            external_js=company[7],
-            social_links=company[8]
+            company_name=company.company_name,
+            city=company.city,
+            industry=company.industry,
+            cms=latest_data.cms if latest_data else None,
+            language=latest_data.language if latest_data else None,
+            framework=latest_data.framework if latest_data else None,
+            external_js=latest_data.external_js if latest_data else None,
+            social_links=latest_data.social_links if latest_data else None,
+            domain_created=latest_data.domain_created if latest_data else None,
         )
     except HTTPException:
         raise

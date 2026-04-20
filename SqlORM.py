@@ -31,6 +31,7 @@ class CompanyData(Base):
     framework = Column(String, nullable=True)
     external_js = Column(Text, nullable=True)
     social_links = Column(Text, nullable=True)
+    domain_created = Column(Date, nullable=True)
 
     def __repr__(self):
         return f"<CompanyData(name='{self.date_parse}')>"

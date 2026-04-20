@@ -7,6 +7,7 @@ import DeepCodeAnalyser
 import JSAnalyser
 import ScreenshotMaker
 import SimpleSaver
+from DomainWhois import get_domain_created_date
 from SqlORM import Company, CompanyData, PostgresDB
 
 
@@ -86,6 +87,8 @@ def process(
             social_links=social_links,
         )
 
+    domain_created = get_domain_created_date(company.url)
+
     effective_date = parse_date or date.today()
     if parse_date is not None:
         # Re-parse from disk should overwrite same-date snapshot for the company.
@@ -103,6 +106,7 @@ def process(
             existing.framework = _as_text(framework)
             existing.external_js = _as_text(external_js)
             existing.social_links = _as_text(social_links)
+            existing.domain_created = domain_created
         else:
             db.session.add(
                 CompanyData(
@@ -113,6 +117,7 @@ def process(
                     framework=_as_text(framework),
                     external_js=_as_text(external_js),
                     social_links=_as_text(social_links),
+                    domain_created=domain_created,
                 )
             )
     else:
@@ -126,6 +131,7 @@ def process(
                 framework=_as_text(framework),
                 external_js=_as_text(external_js),
                 social_links=_as_text(social_links),
+                domain_created=domain_created,
             )
         )
     db.session.commit()
