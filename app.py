@@ -5,7 +5,7 @@ from typing import List, Optional
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 import Main
-from SqlORM import Company, PostgresDB
+from SqlORM import Company, CompanyData, PostgresDB
 
 app = FastAPI(
     title="WebAnalysis API",
@@ -163,23 +163,31 @@ async def create_company(company: CompanyRequest):
 @app.get("/companies", response_model=List[CompanyResponse])
 async def get_companies():
     """
-    Get all companies from the database
+    Get all companies with fields from latest companies_data by date_parse.
     """
     try:
-        companies = db.get("companies")
-        return [
-            CompanyResponse(
-                company_name=company[0],
-                city=company[1],
-                industry=company[2],
-                cms=company[3],
-                language=company[4],
-                framework=company[5],
-                external_js=company[6],
-                social_links=company[7]
+        companies = db.session.query(Company).order_by(Company.id).all()
+        response: List[CompanyResponse] = []
+        for company in companies:
+            latest_data = (
+                db.session.query(CompanyData)
+                .filter(CompanyData.company_id == company.id)
+                .order_by(CompanyData.date_parse.desc(), CompanyData.id.desc())
+                .first()
             )
-            for company in companies
-        ]
+            response.append(
+                CompanyResponse(
+                    company_name=company.company_name,
+                    city=company.city,
+                    industry=company.industry,
+                    cms=latest_data.cms if latest_data else None,
+                    language=latest_data.language if latest_data else None,
+                    framework=latest_data.framework if latest_data else None,
+                    external_js=latest_data.external_js if latest_data else None,
+                    social_links=latest_data.social_links if latest_data else None,
+                )
+            )
+        return response
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
