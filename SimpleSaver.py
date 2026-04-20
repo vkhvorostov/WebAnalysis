@@ -1,6 +1,6 @@
 import os
 import json
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 # from PIL import Image
 
@@ -15,9 +15,31 @@ def get_html(company_name, save_dir):
         return False
 
 
+def _folder_name_for_date(when: datetime) -> str:
+    return when.strftime("%d.%m.%Y")
+
+
+def save_directory_for_date(industry: str, city: str, company_name: str, when: datetime) -> Path:
+    """Path to ParsedData/.../dd.mm.yyyy (does not create the directory)."""
+    return Path("ParsedData") / industry / city / company_name / _folder_name_for_date(when)
+
+
+def save_directory_for_parse_date(
+    industry: str, city: str, company_name: str, parse_date: date
+) -> Path:
+    """Path to ParsedData/.../dd.mm.yyyy for a calendar date (folder may or may not exist)."""
+    return (
+        Path("ParsedData")
+        / industry
+        / city
+        / company_name
+        / parse_date.strftime("%d.%m.%Y")
+    )
+
+
 # Функция для создания иерархии папок
 def create_save_directory(industry, city, company_name):
-    base_dir = Path("ParsedData") / industry / city / company_name / datetime.now().strftime("%d.%m.%Y")  # %H_%M_
+    base_dir = save_directory_for_date(industry, city, company_name, datetime.now())
     os.makedirs(base_dir, exist_ok=True)
     return base_dir
 

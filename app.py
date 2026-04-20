@@ -1,10 +1,11 @@
 import os
+from datetime import date
+from typing import List, Optional
+
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-from typing import Optional, List
+from pydantic import BaseModel, Field
 import Main
-from SqlORM import PostgresDB, Company
+from SqlORM import Company, PostgresDB
 
 app = FastAPI(
     title="WebAnalysis API",
@@ -40,6 +41,31 @@ class CompanyResponse(BaseModel):
     social_links: Optional[str] = None
 
 
+class AnalyzeBatchRequest(BaseModel):
+    ids: Optional[List[int]] = Field(default=None, description="Restrict to these company IDs")
+    cities: Optional[List[str]] = Field(default=None, description="Restrict to these cities")
+    industries: Optional[List[str]] = Field(
+        default=None, description="Restrict to these industries"
+    )
+    date: Optional[date] = Field(
+        default=None,
+        description="If set, read HTML from ParsedData for this calendar date (dd.mm.yyyy folder); if null, fetch from the internet",
+    )
+
+
+class AnalyzeResultItem(BaseModel):
+    id: int
+    company_name: str
+    city: str
+    industry: str
+    status: str
+    detail: Optional[str] = None
+
+
+class AnalyzeBatchResponse(BaseModel):
+    results: List[AnalyzeResultItem]
+
+
 @app.get("/")
 async def root():
     """Root endpoint"""
@@ -52,45 +78,44 @@ async def health_check():
     return {"status": "healthy"}
 
 
-@app.post("/analyze", response_model=CompanyResponse)
-async def analyze_company(company: CompanyRequest):
+@app.post("/companies/analyze", response_model=AnalyzeBatchResponse)
+def companies_analyze(body: AnalyzeBatchRequest):
     """
-    Analyze a company website and store the results
+    Run analysis for companies selected by optional filters. Filters are combined with AND.
+    If `date` is set, HTML is loaded from ParsedData for that date (no internet fetch).
+    If `date` is null, data is collected from the internet (today's parse folder).
     """
     try:
-        # Check if company already exists
-        already_saved = db.get_company(company.city, company.industry, company.company_name)
-        if already_saved:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Company {company.company_name} already exists in database"
+        q = db.session.query(Company)
+        if body.ids:
+            q = q.filter(Company.id.in_(body.ids))
+        if body.cities:
+            q = q.filter(Company.city.in_(body.cities))
+        if body.industries:
+            q = q.filter(Company.industry.in_(body.industries))
+        rows = q.order_by(Company.id).all()
+
+        results: List[AnalyzeResultItem] = []
+        for c in rows:
+            ok, err = Main.process(
+                db,
+                c.city,
+                c.industry,
+                c.company_name,
+                c.url,
+                parse_date=body.date,
             )
-        
-        # Process the company
-        Main.process(
-            db=db,
-            city=company.city,
-            industry=company.industry,
-            company_name=company.company_name.replace('/', '-'),
-            url=company.url
-        )
-        
-        # Get the saved company data
-        saved_company = db.get_company(company.city, company.industry, company.company_name.replace('/', '-'))
-        if saved_company:
-            return CompanyResponse(
-                company_name=saved_company[1],  # Index 1 because ID is at index 0
-                city=saved_company[2],
-                industry=saved_company[3],
-                cms=saved_company[4],
-                language=saved_company[5],
-                framework=saved_company[6],
-                external_js=saved_company[7],
-                social_links=saved_company[8]
+            results.append(
+                AnalyzeResultItem(
+                    id=c.id,
+                    company_name=c.company_name,
+                    city=c.city,
+                    industry=c.industry,
+                    status="ok" if ok else "error",
+                    detail=err,
+                )
             )
-        else:
-            raise HTTPException(status_code=500, detail="Failed to save company data")
-    
+        return AnalyzeBatchResponse(results=results)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
