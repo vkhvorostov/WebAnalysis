@@ -240,6 +240,91 @@ async def get_company(city: str, industry: str, company_name: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.delete("/companies/{id}/data/{data_id}")
+async def delete_company_data_item(id: int, data_id: int):
+    """
+    Delete a single companies_data row for the specified company.
+    DB only; files in ParsedData are not touched.
+    """
+    try:
+        company = db.session.query(Company).filter(Company.id == id).first()
+        if not company:
+            raise HTTPException(status_code=404, detail=f"Company {id} not found")
+
+        data_row = db.session.query(CompanyData).filter(CompanyData.id == data_id).first()
+        if not data_row:
+            raise HTTPException(status_code=404, detail=f"Data record {data_id} not found")
+        if data_row.company_id != id:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Data record {data_id} does not belong to company {id}",
+            )
+
+        db.session.delete(data_row)
+        db.session.commit()
+        return {"status": "deleted", "company_id": id, "data_id": data_id}
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.session.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/companies/{id}/data")
+async def delete_company_data(id: int):
+    """
+    Delete all companies_data rows for the specified company.
+    DB only; files in ParsedData are not touched.
+    """
+    try:
+        company = db.session.query(Company).filter(Company.id == id).first()
+        if not company:
+            raise HTTPException(status_code=404, detail=f"Company {id} not found")
+
+        deleted = (
+            db.session.query(CompanyData)
+            .filter(CompanyData.company_id == id)
+            .delete(synchronize_session=False)
+        )
+        db.session.commit()
+        return {"status": "deleted", "company_id": id, "deleted_count": deleted}
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.session.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/companies/{id}")
+async def delete_company(id: int):
+    """
+    Delete company and all its companies_data rows.
+    DB only; files in ParsedData are not touched.
+    """
+    try:
+        company = db.session.query(Company).filter(Company.id == id).first()
+        if not company:
+            raise HTTPException(status_code=404, detail=f"Company {id} not found")
+
+        deleted_data = (
+            db.session.query(CompanyData)
+            .filter(CompanyData.company_id == id)
+            .delete(synchronize_session=False)
+        )
+        db.session.delete(company)
+        db.session.commit()
+        return {
+            "status": "deleted",
+            "company_id": id,
+            "deleted_data_count": deleted_data,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.session.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.on_event("shutdown")
 async def shutdown_event():
     """Close database connection on shutdown"""

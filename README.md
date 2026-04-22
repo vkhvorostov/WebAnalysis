@@ -72,7 +72,7 @@ Migrations will run automatically on startup. The API will be available at http:
 - добавить в метод GET /companies фильтр по городу, отрасли
 - удалить метод /companies/{city}/{industry}/{company_name}
 - добавить метод GET /companies/{id} возвращающий поля и список данных конкретной компании (упорядоченный по дате в порядке убывания)
-- добавить метод DELETE /companies/{id}/data/{data_id}
-- добавить метод DELETE /companies/{id}/data
-- добавить метод DELETE /companies/{id}
+- [x] добавить метод DELETE /companies/{id}/data/{data_id}
+- [x] добавить метод DELETE /companies/{id}/data
+- [x] добавить метод DELETE /companies/{id}
 - добавить метод PATCH /companies/{id}
