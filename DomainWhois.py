@@ -63,6 +63,7 @@ def get_domain_created_date(url: str) -> Optional[date]:
     """
     domain = extract_domain_from_url(url)
     if not domain:
+        logger.warning("Domain not found for %s", url)
         return None
     try:
         w = whois.whois(domain)

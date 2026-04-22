@@ -151,13 +151,15 @@ def main():
             company_name = row["company_name"].strip().replace("/", "-")
             already_saved = db.get_company(city, industry, company_name)
             if already_saved:
-                company_obj = db.get_company_by_id(already_saved[0])
+                # company_obj = db.get_company_by_id(already_saved[0])
+                print(f"Company {company_name} already exists in database")
             else:
                 company_obj = db.set(
                     "companies", (company_name, city, industry, row["url"].strip())
                 )
-            if company_obj:
-                process(db, company_obj, parse_date=None)
+                print(f"Company {city} / {industry} / {company_name} added to database")
+            # if company_obj:
+            #    process(db, company_obj, parse_date=None)
     db.close()
 
 
