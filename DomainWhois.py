@@ -146,10 +146,10 @@ def get_domain_created_date(url: str) -> Optional[date]:
             last_error = exc
             continue
 
-    # Fallback for TCI zones (.ru / .рф): direct query to whois.tcinet.ru.
+    # Fallback for TCI zones (.ru / .рф / .рус): direct query to whois.tcinet.ru.
     # This path works in environments where python-whois socket flow fails.
     tci_candidate = idna_domain or domain
-    if tci_candidate.endswith((".ru", ".xn--p1ai")):
+    if tci_candidate.endswith((".ru", ".xn--p1ai", ".xn--p1acf")):
         raw = _query_whois_server(tci_candidate, "whois.tcinet.ru")
         if raw:
             parsed = _extract_created_from_text(raw)
