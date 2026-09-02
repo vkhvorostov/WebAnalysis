@@ -268,6 +268,28 @@ alembic upgrade head
 
 ## Running locally
 
+PostgreSQL should **always** run via Docker Compose in this project, even when the API runs on the host (venv + Uvicorn). The app expects Postgres on `localhost:5432` with credentials from `docker-compose.yml`.
+
+### Option A — everything in Docker
+
+```bash
+docker-compose up
+# API :8000, Adminer :8080, Postgres :5432
+```
+
+Compose runs `alembic upgrade head` before Uvicorn and mounts the repo at `/app`.
+
+### Option B — API on host, Postgres in Docker (recommended for local dev)
+
+Start **only** the database service (and optionally Adminer); do **not** start the `api` service:
+
+```bash
+docker-compose up db -d
+# optional: docker-compose up db adminer -d
+```
+
+Then run the app on the host:
+
 ```bash
 python3 -m venv venv
 source venv/bin/activate
@@ -276,21 +298,14 @@ alembic upgrade head
 uvicorn app:app --reload
 ```
 
+Use default env vars (`POSTGRES_HOST=localhost`, `POSTGRES_PORT=5432`) so the host app connects to the Compose Postgres container.
+
 **Requires venv** — bare `uvicorn` fails if not activated.
 
 Live analyze requires:
 
 - Network access
 - Chrome + ChromeDriver (via `webdriver-manager`) for screenshots
-
-Docker Compose:
-
-```bash
-docker-compose up
-# API :8000, Adminer :8080, Postgres :5432
-```
-
-Compose runs `alembic upgrade head` before Uvicorn and mounts the repo at `/app`.
 
 ---
 
