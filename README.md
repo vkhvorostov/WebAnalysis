@@ -69,7 +69,7 @@ Migrations will run automatically on startup. The API will be available at http:
 - [x] изменить метод POST /analyze на POST /companies/analyze - метод должен запускать Main.process для компании с фильтром по списку id, по городу, по отрасли, в случае передачи даты - не собирать данные из интернета, а брать с диска
 - [x] метод Main.process должен сохранять новую запись в таблице companies_data
 - [x] изменить метод GET /companies, чтобы он возвращал данные по последней дате
-- добавить в метод GET /companies фильтр по городу, отрасли
+- добавить в метод GET /companies фильтр по городу, отрасли, пагинацию
 - удалить метод /companies/{city}/{industry}/{company_name}
 - добавить метод GET /companies/{id} возвращающий поля и список данных конкретной компании (упорядоченный по дате в порядке убывания)
 - [x] добавить метод DELETE /companies/{id}/data/{data_id}
